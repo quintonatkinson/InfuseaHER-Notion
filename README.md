@@ -11,14 +11,13 @@ The same Notion data always gives the same lists.
 ## Status
 
 - [x] Step 1: read-only dashboard, ranking rules, tests
-- [ ] Step 2: check-off, owner filter, expandable cards, login
+- [x] Step 2: check-off, owner filter, expandable cards, login
 - [ ] Step 3: chat assistant (read only)
 - [ ] Step 4: chat write tools, safety rules, activity log
 - [ ] Step 5: document upload
 - [ ] Step 6: dashboard settings via chat
 - [ ] Step 7: deploy to Vercel
 
-**Don't deploy yet.** There is no login until step 2, so anyone with the URL could see your tasks.
 
 ## Running it on your computer
 
@@ -32,7 +31,13 @@ You need Node.js 20 or newer (`node -v` to check).
    4. Copy the **Internal Integration Secret** (it starts with `ntn_`).
    5. In Notion, open the **InfuseHER** page, click **•••** (top right) → **Connections** →
       add "InfuseHER Dashboard". That shares InfuseHER and everything under it, and nothing else.
-2. In this folder, copy `.env.example` to `.env.local` and paste the secret after `NOTION_TOKEN=`.
+2. In this folder, copy `.env.example` to `.env.local` and fill in:
+   - `NOTION_TOKEN`: the secret from step 1.
+   - `APP_PASSPHRASE`: the shared passphrase you and Chelsey will type to log in. A few words is
+     easier on a phone than symbols, e.g. `velvet saline morning`.
+   - `SESSION_SECRET`: a long random string. Generate one with
+     `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`.
+
    `.env.local` is ignored by git, so it never gets committed.
 3. Run:
    ```
@@ -40,6 +45,31 @@ You need Node.js 20 or newer (`node -v` to check).
    npm run dev
    ```
 4. Open <http://localhost:3000>.
+
+### Trying it on your phone
+
+`localhost` always means "this device", so on your phone it points at the phone itself. To use
+the dev server from your phone:
+
+1. Phone and computer on the same Wi-Fi.
+2. Run `npm run dev:phone` instead of `npm run dev`.
+3. Find your computer's local address. On a Mac: `ipconfig getifaddr en0`. On Windows: `ipconfig`,
+   and look for "IPv4 Address". It looks like `192.168.1.23`.
+4. On your phone, open `http://192.168.1.23:3000` (your address, port 3000).
+
+If it doesn't load, your computer's firewall may be blocking it. On a Mac, allow "node" to accept
+incoming connections when asked. Once it's on Vercel (step 7) none of this is needed.
+
+## Using it
+
+- Log in with the passphrase and pick who you are. You stay logged in on that device for 30 days.
+  "switch" (top right) logs out so the other person can log in.
+- The filter starts on your own tasks. Your choice is remembered on that device.
+- Tap the circle to mark a task Done in Notion. The list refills straight away, and **Undo** puts
+  it back for 8 seconds after.
+- Tap a card to see its notes, sub-tasks, what's blocking it, what's waiting on it, and a link to Notion.
+- If a person's view has fewer than five tasks across Chokepoints and Quick wins, an
+  "Also on …'s plate" section shows their other doable tasks so the screen is never empty.
 
 If a field in Notion has been renamed, the page will say which one instead of
 showing lists. Field names live in `src/lib/notion/fields.ts`.

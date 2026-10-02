@@ -37,6 +37,9 @@ function optionNames(prop: SchemaProperty | undefined): string[] {
   return (prop?.select ?? prop?.status)?.options.map((o) => o.name) ?? [];
 }
 
+// Remembered from the schema check so writes use the right shape.
+let taskStatus: { type: "select" | "status"; options: string[] } | null = null;
+
 // Reads the live schema and stops with a plain message if anything the app
 // relies on has been renamed or removed. Returns non-fatal warnings.
 export async function checkSchema(): Promise<string[]> {
@@ -56,6 +59,8 @@ export async function checkSchema(): Promise<string[]> {
     }
   }
   if (problems.length) throw new SchemaError(problems.join(" "));
+  const statusProp = tasks.properties[TASK_FIELDS.status.name];
+  taskStatus = { type: statusProp.type as "select" | "status", options: optionNames(statusProp) };
 
   const warnings: string[] = [];
   const owners = optionNames(tasks.properties[TASK_FIELDS.owner.name]);
@@ -162,4 +167,18 @@ export async function loadProjects(): Promise<Project[]> {
     priority: choice(p.properties[F.priority.name]),
     area: choice(p.properties[F.area.name]),
   }));
+}
+
+// ---- Writes ---------------------------------------------------------------
+
+export class InvalidValueError extends Error {}
+
+export async function setTaskStatus(taskId: string, status: string): Promise<void> {
+  if (!taskStatus) await checkSchema();
+  const { type, options } = taskStatus!;
+  if (!options.includes(status)) throw new InvalidValueError(`"${status}" isn't one of the Status options (${options.join(", ")}).`);
+  await notion(`pages/${taskId}`, {
+    method: "PATCH",
+    body: { properties: { [TASK_FIELDS.status.name]: { [type]: { name: status } } } },
+  });
 }

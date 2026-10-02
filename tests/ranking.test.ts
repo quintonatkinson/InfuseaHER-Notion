@@ -243,6 +243,20 @@ describe("lists", () => {
     expect(lists(t, { owner: "Quinton" }).quickWinIds).toEqual(["q"]);
   });
 
+  it("fills a person's view with their other doable tasks when both lists are short", () => {
+    const t = [
+      task("big", { owner: "Chelsey", effort: "Big", priority: "High" }),
+      task("med", { owner: "Chelsey", effort: "Medium" }),
+      task("q", { owner: "Chelsey", effort: "Quick" }),
+      task("waiting", { owner: "Chelsey", status: "Waiting On" }),
+      task("quinton", { owner: "Quinton", effort: "Big" }),
+    ];
+    const r = lists(t, { owner: "Chelsey" });
+    expect(r.quickWinIds).toEqual(["q"]);
+    expect(r.otherIds).toEqual(["big", "med"]);
+    expect(lists(t).otherIds).toEqual([]);
+  });
+
   it("applies pins, snoozes, hidden projects and list size", () => {
     const t = [
       task("a", { effort: "Quick", priority: "High" }),
@@ -325,6 +339,17 @@ describe("live Notion snapshot (2026-10-02)", () => {
   it("finds no cycles and five Waiting On tasks", () => {
     expect(analysis.cycles).toEqual([]);
     expect(r.waitingOnIds).toHaveLength(5);
+  });
+
+  it("never leaves Chelsey's view empty", () => {
+    const c = selectLists(analysis, opts({ owner: "Chelsey" }));
+    expect(c.chokepointIds).toEqual([]);
+    expect(c.quickWinIds).toEqual([]);
+    expect(c.otherIds.map(title)).toEqual([
+      "Close Chelsey's PLP insurance gap (CNPS vs WeRPN)",
+      "Order the clinical supplies list",
+      "Study the IV infusion chart and Botox technique videos",
+    ]);
   });
 
   it("never shows a task in both lists", () => {

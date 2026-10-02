@@ -4,6 +4,7 @@ import { notionConfig } from "../config";
 // Pinned Notion API version. In this version databases hold one or more
 // "data sources", and rows are queried through the data source ID
 // (/v1/data_sources/{id}/query), not the database ID.
+// NOTION_API_BASE is only for local testing against a fake Notion; leave it unset.
 export const NOTION_VERSION = "2026-03-11";
 
 export class NotionError extends Error {
@@ -25,7 +26,7 @@ export async function notion<T>(path: string, init: { method?: string; body?: un
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
     let res: Response;
     try {
-      res = await fetch(`https://api.notion.com/v1/${path}`, {
+      res = await fetch(`${process.env.NOTION_API_BASE ?? "https://api.notion.com/v1"}/${path}`, {
         method: init.method ?? "GET",
         headers: {
           Authorization: `Bearer ${token}`,

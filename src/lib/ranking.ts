@@ -187,6 +187,10 @@ export interface DashboardLists {
   objectives: Objective[];
   waitingOnIds: string[];
   pinnedIds: string[];
+  // Only for a person's filter, when the two lists hold fewer than listSize
+  // tasks between them: that person's other doable tasks, so their view is
+  // never empty just because nothing of theirs is a chokepoint or quick win.
+  otherIds: string[];
 }
 
 function matchesOwner(task: Task, owner: OwnerFilter): boolean {
@@ -253,12 +257,26 @@ export function selectLists(analysis: Analysis, opts: ListOptions): DashboardLis
     .sort((a, b) => compareByUrgency(a.task, b.task))
     .map((i) => i.task.id);
 
+  const chokepointIds = fill(pinnedChoke, chokepoints);
+  const quickWinIds = fill(pinnedQuick, quickWins);
+  const shown = new Set([...chokepointIds, ...quickWinIds]);
+  const room = settings.listSize - shown.size;
+  const otherIds =
+    owner === "Everyone" || room <= 0
+      ? []
+      : candidates
+          .filter((i) => i.actionable && !shown.has(i.task.id))
+          .sort((a, b) => compareByUrgency(a.task, b.task))
+          .slice(0, room)
+          .map((i) => i.task.id);
+
   return {
-    chokepointIds: fill(pinnedChoke, chokepoints),
-    quickWinIds: fill(pinnedQuick, quickWins),
+    chokepointIds,
+    quickWinIds,
     objectives,
     waitingOnIds,
     pinnedIds: [...pinnedSet],
+    otherIds,
   };
 }
 
@@ -294,13 +312,15 @@ function objectiveFor(analysis: Analysis, parent: TaskInsight): Objective {
 }
 
 // One line saying why a task is on the list.
-export function explain(i: TaskInsight, list: "chokepoint" | "quickwin"): string {
+export function explain(i: TaskInsight, list: "chokepoint" | "quickwin" | "other"): string {
   const parts: string[] = [];
   if (list === "chokepoint") {
     const n = i.downstreamIds.length;
     if (n > 0) parts.push(n === 1 ? "1 open task waits on this" : `${n} open tasks wait on this`);
-  } else {
+  } else if (list === "quickwin") {
     parts.push("Quick, nothing waits on it");
+  } else {
+    parts.push("Ready to start");
   }
   if (i.task.priority) parts.push(`${i.task.priority} priority`);
   if (!i.actionable) parts.push(i.notActionableReason);

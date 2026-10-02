@@ -131,11 +131,57 @@ h2 {
 }
 
 .card {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  padding: 14px 16px;
+  padding: 6px 12px 6px 4px;
   margin-bottom: 10px;
+}
+
+/* Round tick box: the button is 48px for fingers; the circle inside is smaller. */
+.check {
+  flex: none;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.check span {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  transition: background 0.15s;
+}
+
+.check:hover span,
+.check:focus-visible span {
+  background: var(--accent-soft);
+}
+
+.card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.card-toggle {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 10px 0 8px;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
 }
 
 .card-title {
@@ -182,11 +228,13 @@ h2 {
 }
 
 .unlocks {
+  display: block;
   margin: 10px 0 0;
   font-size: 14px;
 }
 
 .why {
+  display: block;
   margin: 4px 0 0;
   font-size: 13px;
   color: var(--muted);
@@ -269,4 +317,182 @@ progress::-moz-progress-bar {
 .waiting li {
   padding: 8px 0;
   font-size: 15px;
+}
+
+.top-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.link.small {
+  min-height: 36px;
+  padding: 4px 0;
+  font-size: 14px;
+}
+
+.owner-filter {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  margin-bottom: 20px;
+  background: var(--soft);
+  border-radius: 999px;
+}
+
+.owner-filter button {
+  flex: 1;
+  min-height: 44px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.owner-filter button.on {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 1px 2px rgba(58, 47, 41, 0.12);
+}
+
+@media (min-width: 860px) {
+  .owner-filter {
+    max-width: 420px;
+  }
+}
+
+.details {
+  padding: 4px 0 12px;
+  border-top: 1px solid var(--line);
+  font-size: 15px;
+}
+
+.details h3 {
+  margin: 12px 0 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.details ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.details li {
+  padding: 3px 0;
+}
+
+.details li.done {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.notes {
+  white-space: pre-wrap;
+  margin: 10px 0 0;
+}
+
+.notion-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-top: 6px;
+  color: var(--accent);
+}
+
+.toast {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: 20px;
+  max-width: 520px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 8px 6px 16px;
+  border-radius: var(--radius);
+  background: var(--ink);
+  color: var(--surface);
+  font-size: 15px;
+  box-shadow: 0 6px 24px rgba(58, 47, 41, 0.25);
+}
+
+.toast .link {
+  color: #f3c9d2;
+  padding: 8px 10px;
+  align-self: center;
+}
+
+.toast.error {
+  background: #7d3443;
+}
+
+/* Login */
+.login {
+  max-width: 420px;
+  padding-top: 15vh;
+}
+
+.login form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.login label {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.login input {
+  min-height: 48px;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: 16px;
+}
+
+.login input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.who {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.who button {
+  min-height: 52px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--accent);
+  color: #fff;
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.who button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.lists.single {
+  margin-top: 28px;
+  grid-template-columns: 1fr;
 }
