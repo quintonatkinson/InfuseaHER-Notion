@@ -1,5 +1,7 @@
 // Login session: a cookie holding who you are and when it expires, signed
-// with SESSION_SECRET so it can't be forged or edited. Server-side only
+// so it can't be forged or edited. The signing key is SESSION_SECRET if set,
+// otherwise it is derived from NOTION_TOKEN (already a long random secret),
+// which saves a setup step. Server-side only
 // (used by proxy.ts and API routes); never imported by browser code.
 
 export const SESSION_COOKIE = "infuseher_session";
@@ -27,8 +29,10 @@ function fromB64url(s: string): Uint8Array {
 
 function secret(): string {
   const s = process.env.SESSION_SECRET?.trim();
-  if (!s || s.length < 32) throw new Error("SESSION_SECRET is missing or shorter than 32 characters.");
-  return s;
+  if (s && s.length >= 32) return s;
+  const token = process.env.NOTION_TOKEN?.trim();
+  if (token) return `infuseher-session:${token}`;
+  throw new Error("Set NOTION_TOKEN (or SESSION_SECRET) before logging in.");
 }
 
 async function key() {

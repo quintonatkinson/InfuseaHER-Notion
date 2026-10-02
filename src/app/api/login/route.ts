@@ -11,9 +11,9 @@ function sameText(a: string, b: string): boolean {
 
 export async function POST(request: Request) {
   const expected = process.env.APP_PASSPHRASE?.trim();
-  if (!expected || !process.env.SESSION_SECRET) {
+  if (!expected || !(process.env.SESSION_SECRET || process.env.NOTION_TOKEN)) {
     return NextResponse.json(
-      { error: "Login isn't set up yet: APP_PASSPHRASE and SESSION_SECRET need to be set." },
+      { error: "Login isn't set up yet: APP_PASSPHRASE and NOTION_TOKEN need to be set in Vercel." },
       { status: 500 },
     );
   }

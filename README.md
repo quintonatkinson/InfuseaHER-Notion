@@ -19,6 +19,16 @@ The same Notion data always gives the same lists.
 - [ ] Step 7: deploy to Vercel
 
 
+## Putting it online (Vercel)
+
+1. Make the GitHub repo private (Settings → Danger Zone → Change visibility).
+2. Create the Notion integration and connect it to the InfuseHER page (see step 1 below).
+3. On vercel.com/new, import this repo. Under **Environment Variables** add `NOTION_TOKEN` and
+   `APP_PASSPHRASE`, then Deploy.
+4. Open the link, log in, and use the browser's **Add to Home Screen** to get an app icon.
+
+Every push to this branch redeploys automatically.
+
 ## Running it on your computer
 
 You need Node.js 20 or newer (`node -v` to check).
@@ -35,8 +45,7 @@ You need Node.js 20 or newer (`node -v` to check).
    - `NOTION_TOKEN`: the secret from step 1.
    - `APP_PASSPHRASE`: the shared passphrase you and Chelsey will type to log in. A few words is
      easier on a phone than symbols, e.g. `velvet saline morning`.
-   - `SESSION_SECRET`: a long random string. Generate one with
-     `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`.
+   - Everything else in `.env.example` is optional; the workspace IDs are built in.
 
    `.env.local` is ignored by git, so it never gets committed.
 3. Run:
